@@ -11,7 +11,7 @@ setuptools.setup(
     long_description_content_type = 'text/markdown',
     url = 'https://github.com/billju/lazyplotly',
     #packages = setuptools.find_packages(),
-    scripts = ['lazyplotly']
+    scripts = ['lazyplotly.py']
 )
 #python setup.py sdist bdist_wheel
 #twine upload --repository-url https://test.pypi.org/legacy/ dist/*
