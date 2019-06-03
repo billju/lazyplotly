@@ -1,6 +1,11 @@
 # lazyplotly
 A wrapper of interactive visualization package plotly. Sometimes we are just too lazy to make nested dictionary. Especially creating dropdown menus or slide bars is a way too exhuasting. Moreover, variables of different kind of chart are renamed into a single taxonomy.
-
+### What is simplified as easy as possible
+1. creating widgets such as dropdown menu or a slider bar
+2. combine different type of charts together into subplots
+3. automatically calculate grid rows and columns of subplots
+4. configuring different type of variable, using them in a single taxonomy
+5. initiate settings for jupyter notebook users
 ### Installation
 ```
 $ pip install plotly lazyplotly
@@ -122,8 +127,7 @@ scattermapbox = lp.scattermapbox(x='lon',y='lat',z='volume',tooltip='stop',name=
 scattermapbox['mode'] = 'markers+lines'
 lp.mapbox(scattermapbox,token=token,zoom=9)
 ```
-![](https://github.com/billju/lazyplotly/raw/master/images/map.png)
-
+![](https://github.com/billju/lazyplotly/raw/master/images/mapbox.png)
 ### APIs
 ```
 lp.cmap     # show all colorscales available in plotly
@@ -146,7 +150,7 @@ box(y, df, name, color)
 histogram(x, df, name, color, <int>bins, <bool>cum, <bool>prob)
 pie(x, x2, y, df, name, hole, color)
 heatmap(df, cmap)
-sankey(x,y,z,df=None)
-scattermapbox(x,y,z=5,tooltip=None,df=None,name=None)
-mapbox(data,token,zoom=10,output=None,config=None)
+sankey(x, y, z, df)
+scattermapbox(x, y, z, tooltip, df, name)
+mapbox(data, token, zoom, output, config)
 ```
