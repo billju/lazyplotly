@@ -9,10 +9,10 @@ def check_and_set(dic,key,subkey,value):
     return dic
 def plot(data,layout=None,output=False,config=None,cols=None,rows=None,
         rangeslider=False,no_padding=False,title='',xlabel='',ylabel=''):
-    #初始化設定，不可使用dict作為預設變數，否則變數不會更新
+    #initiate all settings, donn't use dict as default vairable or it would not be refreshed
     layout = {} if layout is None else layout
     config = {} if config is None else config
-    #確保資料格式
+    #ensure everything is in list
     trace_id_list = []
     trace_id = 0
     if type(data)==list:
@@ -32,7 +32,7 @@ def plot(data,layout=None,output=False,config=None,cols=None,rows=None,
         data = [data]
         trace_id_list.append(trace_id)
     grid_count = max(trace_id_list)+1
-    #設定子圖
+    #setting subplots
     if rows and not cols:
         cols = grid_count//rows
         cols+= 1 if grid_count%rows>0 else 0
@@ -43,20 +43,20 @@ def plot(data,layout=None,output=False,config=None,cols=None,rows=None,
         for i in range(len(data)):
             trace = data[i].copy()
             trace_id = trace_id_list[i]
-            if trace['type'] in ['pie','sunburse','sankey']:
+            if trace['type'] in ['pie','sunburst','sankey']:
                 trace['domain'] = dict(row=trace_id//cols,column=trace_id%cols)
             else:
                 trace['xaxis'] = f'x{trace_id%cols+1}'
                 trace['yaxis'] = f'y{trace_id//cols+1}'
             data[i] = trace
         layout['grid'] = go.layout.Grid(columns=cols, rows=rows) 
-    #設定卷軸
+    #setting rangeslider
     if not 'xaxis' in layout:
         layout['xaxis'] = dict()
     layout['xaxis']['rangeslider'] = dict(visible = rangeslider)
     if no_padding:
         layout['margin'] = dict(l=0,r=0,b=0,t=0)
-    #設定標題
+    #setting title and axis
     if title:
         layout['title'] = title
     if xlabel:
@@ -64,7 +64,7 @@ def plot(data,layout=None,output=False,config=None,cols=None,rows=None,
     if ylabel:
         layout = check_and_set(layout,'yaxis','title',ylabel)
     fig = go.Figure(data=data,layout=layout)
-    #設定輸出
+    #setting output type
     return offline.plot(fig,config=config,filename=output,auto_open=False) if output else offline.iplot(fig,config=config)
 
 class TypeError(Exception):
@@ -105,7 +105,6 @@ def dropdown(datas,btn_labels=[],layout=None,output=False,config=None,
     layout['updatemenus'] = [dict(buttons=buttons)]
     if no_padding:
         layout['margin'] = dict(l=0,r=0,b=0,t=0)
-    #設定標題
     if title:
         layout['title'] = title
     if xlabel:
@@ -145,7 +144,6 @@ def slider(datas,prefix='',layout=None,config=None,output=False,
     layout['sliders'] = [dict(currentvalue=dict(prefix=prefix),steps=steps)]
     if no_padding:
         layout['margin'] = dict(l=0,r=0,b=0,t=0)
-    #設定標題
     if title:
         layout['title'] = title
     if xlabel:
@@ -195,7 +193,7 @@ def line3d(x,y,z,df=None,name=None,color=None):
         trace['line'] = dict(color=color)
     return trace
 def area(x,y,df=None,name=None,y2=None,color=None):
-    #['tozeroy','tonexty','tozerox'][之間、底部、頂部]
+    #['tozeroy','tonexty','tozerox']
     x,y,name = make_params(x,y,df,name)
     if y2:
         y2 = df[y2] if df is not None else y2
@@ -214,11 +212,11 @@ def area3d(x,y,z,df=None,name=None,color=None):
 def mesh3d(x,y,z,df=None,name=None,color=None):
     x,y,name = make_params(x,y,df,name)
     z = df[z] if df is not None else z
-    trace = dict(type='mesh3d',x=x,y=y,z=z,alphahull=7,opacity=0.1)
+    trace = dict(type='mesh3d',x=x,y=y,z=z,color=color,alphahull=7,opacity=0.1)
     return trace
 def box(y,df=None,name=None,color=None):
     _,y,name = make_params(None,y,df,name)
-    trace = dict(type='box',y=y,marker=dict(color=color))
+    trace = dict(type='box',y=y,marker=dict(color=color), name=name)
     return trace
 def histogram(x,df=None,name=None,bins=None,cum=False,prob=False):
     x,_,name = make_params(x,None,df,name)
@@ -240,15 +238,75 @@ def pie(x,y,df=None,name=None,x2=None,hole=0,color=None):
 def heatmap(df,cmap='Viridis'):
     trace = dict(type='heatmap',x=df.index,y=df.columns,z=df.values,colorscale=cmap)
     return trace
-def sankey(df):
+def sankey(x,y,z,df=None):
     df = df.copy()
-    df.columns = ['origin','destin','counts']
-    node = list(set(df['origin']) | set(df['destin']))
-    source = [node.index(origin) for origin in df['origin']]
-    target = [node.index(destin) for destin in df['destin']]
-    value = df['counts'].to_list()
+    if df is not None:
+        if isinstance(df, dict):
+            x, y, z = df[x], df[y], df[z]
+        else:
+            x, y, z = df[x].to_list(), df[y].to_list(), df[z].to_list()
+    node = list(set(x) | set(y))
+    source = [node.index(origin) for origin in x]
+    target = [node.index(destin) for destin in y]
+    value = z
     trace = dict(type='sankey',
                     node=dict(label=node),
                     link=dict(source=source,target=target,value=value)
                 )
     return trace
+def scattermapbox(x,y,z=5,tooltip=None,df=None,name=None):
+    if df is not None:
+        x,y,z,tooltip = df[x],df[y],df[z],df[tooltip]
+    return dict(type='scattermapbox',lat=y,lon=x,text=tooltip,marker=dict(size=z),line=dict(width=2),name=name)
+def mapbox(data,token,zoom=10,output=None,config=None):
+    if not isinstance(data,list):       
+        data = [data]
+    mean_lat = sum([sum(trace['lat']) for trace in data])/ sum([len(trace['lat']) for trace in data])
+    mean_lon = sum([sum(trace['lon']) for trace in data])/ sum([len(trace['lon']) for trace in data])
+    layout = go.Layout(
+        autosize=True,
+        hovermode='closest',
+        margin = dict(l=0,r=0,b=0,t=0),
+        mapbox=dict(
+            accesstoken=token,
+            center=dict(lat=mean_lat,lon=mean_lon),
+            zoom=zoom,
+        ),
+    )
+    fig = go.Figure(data=data, layout=layout)
+    return offline.plot(fig,filename=output,auto_open=False) if output else offline.iplot(fig)
+color = ['aliceblue',' antiquewhite',' aqua',' aquamarine',' azure',
+    'beige',' bisque',' black',' blanchedalmond',' blue',
+    'blueviolet',' brown',' burlywood',' cadetblue',
+    'chartreuse',' chocolate',' coral',' cornflowerblue',
+    'cornsilk',' crimson',' cyan',' darkblue',' darkcyan',
+    'darkgoldenrod',' darkgray',' darkgrey',' darkgreen',
+    'darkkhaki',' darkmagenta',' darkolivegreen',' darkorange',
+    'darkorchid',' darkred',' darksalmon',' darkseagreen',
+    'darkslateblue',' darkslategray',' darkslategrey',
+    'darkturquoise',' darkviolet',' deeppink',' deepskyblue',
+    'dimgray',' dimgrey',' dodgerblue',' firebrick',
+    'floralwhite',' forestgreen',' fuchsia',' gainsboro',
+    'ghostwhite',' gold',' goldenrod',' gray',' grey',' green',
+    'greenyellow',' honeydew',' hotpink',' indianred',' indigo',
+    'ivory',' khaki',' lavender',' lavenderblush',' lawngreen',
+    'lemonchiffon',' lightblue',' lightcoral',' lightcyan',
+    'lightgoldenrodyellow',' lightgray',' lightgrey',
+    'lightgreen',' lightpink',' lightsalmon',' lightseagreen',
+    'lightskyblue',' lightslategray',' lightslategrey',
+    'lightsteelblue',' lightyellow',' lime',' limegreen',
+    'linen',' magenta',' maroon',' mediumaquamarine',
+    'mediumblue',' mediumorchid',' mediumpurple',
+    'mediumseagreen',' mediumslateblue',' mediumspringgreen',
+    'mediumturquoise',' mediumvioletred',' midnightblue',
+    'mintcream',' mistyrose',' moccasin',' navajowhite',' navy',
+    'oldlace',' olive',' olivedrab',' orange',' orangered',
+    'orchid',' palegoldenrod',' palegreen',' paleturquoise',
+    'palevioletred',' papayawhip',' peachpuff',' peru',' pink',
+    'plum',' powderblue',' purple',' red',' rosybrown',
+    'royalblue',' saddlebrown',' salmon',' sandybrown',
+    'seagreen',' seashell',' sienna',' silver',' skyblue',
+    'slateblue',' slategray',' slategrey',' snow',' springgreen',
+    'steelblue',' tan',' teal',' thistle',' tomato',' turquoise',
+    'violet',' wheat',' white',' whitesmoke',' yellow','yellowgreen'
+]
