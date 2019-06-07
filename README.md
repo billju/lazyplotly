@@ -1,10 +1,10 @@
 # lazyplotly
 A wrapper of interactive visualization package plotly. Sometimes we are just too lazy to make nested dictionary. Especially creating dropdown menus or slide bars is a way too exhuasting. Moreover, variables of different kind of chart are renamed into a single taxonomy.
 ### What is simplified as easy as possible
-1. creating widgets such as dropdown menu or a slider bar
+1. creat widgets such as dropdown menu or a slider bar
 2. combine different type of charts together into subplots
 3. automatically calculate grid rows and columns of subplots
-4. configuring different type of variable, using them in a single taxonomy
+4. rename different type of variables to make them in a single taxonomy
 5. initiate settings for jupyter notebook users
 ### Installation
 ```
