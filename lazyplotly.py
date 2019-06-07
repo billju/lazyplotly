@@ -95,7 +95,7 @@ def dropdown(datas,btn_labels=[],layout=None,output=False,config=None,
                             else:
                                 arg_dict[feature].append(list(trace[feature]))
         except:
-            raise TypeError('did you forgot to wrap these charts?')
+            raise TypeError('did you forget to wrap these charts?')
         button = dict(
             method='update',
             label= i+1 if i+1>len(btn_labels) else btn_labels[i],
@@ -135,7 +135,7 @@ def slider(datas,prefix='',layout=None,config=None,output=False,
                             else:
                                 arg_dict[feature].append(list(trace[feature]))
         except:
-            raise TypeError('did you forgot to wrap these charts?')
+            raise TypeError('did you forget to wrap these charts?')
         step = dict(
             method='update',
             args=[arg_dict]
