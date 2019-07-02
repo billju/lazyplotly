@@ -1,11 +1,11 @@
 # lazyplotly
 A wrapper of interactive visualization package plotly. Sometimes we are just too lazy to make nested dictionary. Especially creating dropdown menus or slide bars is a way too exhuasting. Moreover, variables of different kind of chart are renamed into a single taxonomy.
 ### What is simplified as easy as possible
-1. creat widgets such as dropdown menu or a slider bar
+1. create interactive widgets such as dropdown menu or a slider bar
 2. combine different type of charts together into subplots
 3. automatically calculate grid rows and columns of subplots
 4. rename different type of variables to make them in a single taxonomy
-5. initiate settings for jupyter notebook users
+5. initiate essential settings for jupyter notebook users
 ### Installation
 ```
 $ pip install plotly lazyplotly
@@ -32,7 +32,7 @@ lp.dropdown(
 ![](https://github.com/billju/lazyplotly/raw/master/images/dropdown.png)
 ### Custom extension
 ```
-# using dataframe object by setting xy variables with column name
+# use dataframe object by setting xy variables with column name
 df = dict(order=[1,2,3,4,5],trend=[22,33,47,57,46],lower=[21,32,43,54,32],upper=[23,34,51,60,60])
 area = lp.area(x='order', y='lower', y2='upper', df=df, color='rgba(0,176,246,0.2)', name='CI')
 line = lp.line(x='order', y='trend', df=df)
@@ -67,10 +67,10 @@ for x in df.columns:
             data.append(lp.histogram(x=df[x], name=x))
         else:
             data.append(lp.scatter(x=df[x], y=df[y], name=f'{x}-{y}'))
-# making subplot
+# combine all subplots
 lp.plot(data, rows=7)
 
-# or a boxplot collection
+# or make a collection of boxplot
 lp.plot([lp.box(y=df[col], name=col) for col in df.columns])
 ```
 ![](https://github.com/billju/lazyplotly/raw/master/images/subplot.png)
@@ -116,7 +116,7 @@ lp.plot(sankey)
 ![](https://github.com/billju/lazyplotly/raw/master/images/sankey.png)
 ### Map
 ```
-token = 'your mapbox api access token, get your own one at https://account.mapbox.com/'
+token = 'your mapbox api access token, get yours at https://account.mapbox.com/'
 df = dict(
     lon=[121.1,121.2,121.5,121.3],
     lat=[24.1,24.3,24.5,24.2],
